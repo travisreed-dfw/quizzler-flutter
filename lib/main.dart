@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'quiz_brain.dart';
 
 QuizBrain quizBrain = QuizBrain();
@@ -37,20 +38,51 @@ class _QuizPageState extends State<QuizPage> {
         i,
         color: c,
       ));
-      quizBrain.nextQuestion();
     });
   }
 
   void checkAnswer(bool boolChoice) {
-    bool correctAnswer = quizBrain.getQuestionAnswer();
-    if (correctAnswer == boolChoice) {
-      print('User got it right!');
-      scoreKeeperState(i: Icons.check, c: Colors.green);
+    if (quizBrain.isFinished() == true) {
+      Alert(
+        context: context,
+        type: AlertType.error,
+        title: "GAME OVER",
+        desc: "You answered everything",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Reset",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              quizBrain.reset();
+              _scoreKeeper = [];
+            },
+            width: 120,
+          )
+        ],
+      ).show();
     } else {
-      print('User got it wrong...');
-      scoreKeeperState(i: Icons.close, c: Colors.red);
+      bool correctAnswer = quizBrain.getQuestionAnswer();
+      if (correctAnswer == boolChoice) {
+        print('User got it right!');
+        scoreKeeperState(i: Icons.check, c: Colors.green);
+        quizBrain.nextQuestion();
+      } else {
+        print('User got it wrong...');
+        scoreKeeperState(i: Icons.close, c: Colors.red);
+        quizBrain.nextQuestion();
+      }
     }
   }
+  //TODO: Step 4 - Use IF/ELSE to check if we've reached the end of the quiz. If true, execute Part A, B, C, D.
+  //TODO: Step 4 Part A - show an alert using rFlutter_alert (remember to read the docs for the package!)
+  //HINT! Step 4 Part B is in the quiz_brain.dart
+  //TODO: Step 4 Part C - reset the questionNumber,
+  //TODO: Step 4 Part D - empty out the scoreKeeper.
+
+  //TODO: Step 5 - If we've not reached the end, ELSE do the answer checking steps below 👇
 
   @override
   Widget build(BuildContext context) {
